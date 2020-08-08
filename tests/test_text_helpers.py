@@ -4,6 +4,18 @@ import torch
 
 import text_helpers as th
 
+class TestExpectedMetadata(unittest.TestCase):
+    '''Test certain expectations of metadata within the module'''
+
+    def test_all_letters_variable(self):
+        '''Test for expected number of characters in ALL_LETTERS variable'''
+        self.assertEqual(len(th.ALL_LETTERS), 53)
+
+    def test_letters_total(self):
+        '''Test for expected number of characters in LETTERS_TOTAL variable'''
+        self.assertEqual(th.LETTERS_TOTAL, 54)
+
+
 class TestUnicodeToAsciiFunction(unittest.TestCase):
     '''Test unicodeToAsciiFunction function'''
 
