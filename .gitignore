@@ -1,2 +1,5 @@
 # some checkpoints thing
 .ipynb_checkpoints
+
+# some python crap
+__pycache__
