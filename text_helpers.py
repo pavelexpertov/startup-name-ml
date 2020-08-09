@@ -1,6 +1,7 @@
 """Helper functions for text data"""
 
 import unicodedata
+import random
 import string
 
 import torch
@@ -19,7 +20,7 @@ def unicodeToAscii(s):
         if unicodedata.category(c) != 'Mn' and c in ALL_LETTERS
     )
 
-words = [unicodeToAscii(word) for word in words if word]
+WORDS = [unicodeToAscii(word) for word in words if word]
 
 def getInputWordTensor(word):
     '''Return a tensor representing a word in terms of multi-dimensional ndarrays of 0s and 1s'''
@@ -34,3 +35,8 @@ def getInputWordTensor(word):
 def getTargetWordTensor(word):
     '''Return a tensor of type Long that represents letters in terms of index positions including EOS'''
     return torch.LongTensor([ALL_LETTERS.find(letter) for letter in word] + [LETTERS_TOTAL - 1])
+
+def getRandomTraningTensorSet(words):
+    '''Return an input tensor and a target tensor for a randomly selected word'''
+    random_word = random.choice(words)
+    return getInputWordTensor(random_word), getTargetWordTensor(random_word)
