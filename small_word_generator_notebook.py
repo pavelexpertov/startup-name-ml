@@ -30,7 +30,8 @@ class firstRNN(nn.Module):
         self.i2h = nn.Linear(input_size + hidden_size, hidden_size)
         self.i2o = nn.Linear(input_size + hidden_size, output_size)
         self.o2o = nn.Linear(output_size + hidden_size, output_size)
-        self.dropout = nn.Dropout(0.1)
+        # used to be 0.1
+        self.dropout = nn.Dropout(0.8)
         self.softmax = nn.LogSoftmax(dim=1)
 
     def forward(self, input, hidden):
@@ -86,7 +87,7 @@ def timeSince(since):
     return '%dm %ds' % (m, s)
 
 # In [ ]
-def train_loop(rnn, word_sample, train_func, n_iters=100000, print_every=10, plot_every=500):
+def train_loop(rnn, word_sample, train_func, n_iters=100000, print_every=10, plot_every=500, learning_rate=0.0005):
     '''Train a neural network through loop iterations'''
     all_losses = []
     total_loss = 0 # Reset every plot_every iters
@@ -107,7 +108,7 @@ def train_loop(rnn, word_sample, train_func, n_iters=100000, print_every=10, plo
 
 # In [ ]
 rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
-train_loop(rnn, LOWER_UP_TO_5_CHAR_WORDS, train, n_iters=5000)
+train_loop(rnn, LOWER_UP_TO_5_CHAR_WORDS, train, n_iters=15000)
 
 # In [ ]
 def evaluate(input_letter, rnn):
@@ -134,9 +135,14 @@ def evaluate(input_letter, rnn):
         return ''.join(letters)
 
 # In [ ]
-evaluate('y', rnn)
+evaluate('o', rnn)
 
-# In [ ]
-rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
-
-train()
+# <markdown>
+## Observations
+- It looks like if I remove the dropout layer, it will just print a constant list of strings. Thus the layer is necessary sincie
+it provides a 'random' capability to the model due to its job of turning of certain numberes/bits in tensors.
+- It looks like the drop out layer affects the randomness of words as well as **word**-like generated samples:
+    - If the default values (i.e. dropout at 0.1 and learning_rate at 0.0005), the random generated text doesn't read like a word.
+    - If dropout is increased either to 0.4 or 0.8, the generated sequences are much more like words and even include capital letters despite samples not having them at all.
+    It shows that the dropout makes the model more generative by randomly turning off certain bits in the array.
+        - The learning rate seems to be kinda effective but it seems the models still give out consistently word-like sequences.
