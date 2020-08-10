@@ -86,24 +86,57 @@ def timeSince(since):
     return '%dm %ds' % (m, s)
 
 # In [ ]
+def train_loop(rnn, word_sample, train_func, n_iters=100000, print_every=10, plot_every=500):
+    '''Train a neural network through loop iterations'''
+    all_losses = []
+    total_loss = 0 # Reset every plot_every iters
+
+    start = time.time()
+
+    for iter in range(1, n_iters + 1):
+        input_tensor, target_tensor = th.getRandomTraningTensorSet(word_sample)
+        output, loss = train_func(input_tensor, target_tensor, rnn)
+        total_loss += loss
+
+        if iter % print_every == 0:
+            print('%s (%d %d%%) %.4f' % (timeSince(start), iter, iter / n_iters * 100, loss))
+
+        if iter % plot_every == 0:
+            all_losses.append(total_loss / plot_every)
+            total_loss = 0
+
+# In [ ]
+rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
+train_loop(rnn, LOWER_UP_TO_5_CHAR_WORDS, train, n_iters=5000)
+
+# In [ ]
+def evaluate(input_letter, rnn):
+    '''Gimme me a word'''
+    with torch.no_grad():
+        letters = [input_letter]
+
+        input_letter_tensor = th.getInputWordTensor(input_letter)
+        hidden = rnn.getInitialisedHidden()
+
+        counter = 0
+        while(counter < 20):
+            output, hidden = rnn(input_letter_tensor[0], hidden)
+            topv, topi = output.topk(1)
+            topi = topi[0][0]
+            if topi == th.LETTERS_TOTAL - 1:
+                break
+            else:
+                letter = th.ALL_LETTERS[topi]
+                letters.append(letter)
+                input_letter_tensor = th.getInputWordTensor(letter)
+            counter += 1
+
+        return ''.join(letters)
+
+# In [ ]
+evaluate('y', rnn)
+
+# In [ ]
 rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
 
-n_iters = 100000
-print_every = 10
-plot_every = 500
-all_losses = []
-total_loss = 0 # Reset every plot_every iters
-
-start = time.time()
-
-for iter in range(1, n_iters + 1):
-    input_tensor, target_tensor = th.getRandomTraningTensorSet(LOWER_UP_TO_5_CHAR_WORDS)
-    output, loss = train(input_tensor, target_tensor, rnn)
-    total_loss += loss
-
-    if iter % print_every == 0:
-        print('%s (%d %d%%) %.4f' % (timeSince(start), iter, iter / n_iters * 100, loss))
-
-    if iter % plot_every == 0:
-        all_losses.append(total_loss / plot_every)
-        total_loss = 0
+train()
