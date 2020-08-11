@@ -1,4 +1,6 @@
 # In [ ]
+import random
+
 import torch
 import torch.nn as nn
 
@@ -108,7 +110,7 @@ def train_loop(rnn, word_sample, train_func, n_iters=100000, print_every=10, plo
 
 # In [ ]
 rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
-train_loop(rnn, LOWER_UP_TO_5_CHAR_WORDS, train, n_iters=15000)
+# train_loop(rnn, LOWER_UP_TO_5_CHAR_WORDS, train, n_iters=15000)
 
 # In [ ]
 def evaluate(input_letter, rnn):
@@ -135,14 +137,57 @@ def evaluate(input_letter, rnn):
         return ''.join(letters)
 
 # In [ ]
-evaluate('o', rnn)
+# evaluate('o', rnn)
 
 # <markdown>
 ## Observations
-- It looks like if I remove the dropout layer, it will just print a constant list of strings. Thus the layer is necessary sincie
-it provides a 'random' capability to the model due to its job of turning of certain numberes/bits in tensors.
-- It looks like the drop out layer affects the randomness of words as well as **word**-like generated samples:
-    - If the default values (i.e. dropout at 0.1 and learning_rate at 0.0005), the random generated text doesn't read like a word.
-    - If dropout is increased either to 0.4 or 0.8, the generated sequences are much more like words and even include capital letters despite samples not having them at all.
-    It shows that the dropout makes the model more generative by randomly turning off certain bits in the array.
-        - The learning rate seems to be kinda effective but it seems the models still give out consistently word-like sequences.
+# - It looks like if I remove the dropout layer, it will just print a constant list of strings. Thus the layer is necessary sincie
+# it provides a 'random' capability to the model due to its job of turning of certain numberes/bits in tensors.
+# - It looks like the drop out layer affects the randomness of words as well as **word**-like generated samples:
+    # - If the default values (i.e. dropout at 0.1 and learning_rate at 0.0005), the random generated text doesn't read like a word.
+    # - If dropout is increased either to 0.4 or 0.8, the generated sequences are much more like words and even include capital letters despite samples not having them at all.
+    # It shows that the dropout makes the model more generative by randomly turning off certain bits in the array.
+        # - The learning rate seems to be kinda effective but it seems the models still give out consistently word-like sequences.
+# I will try to amend training data to improve generation of word-like sequences.
+
+# In [ ]
+# Will make a dataset where it only consists of first two characters.
+TWO_CHAR_WORDS = list(set([word[:2] for word in LOWER_UP_TO_5_CHAR_WORDS if len(word) > 1]))
+print('length', len(TWO_CHAR_WORDS))
+for choice in [word for word in random.choices(TWO_CHAR_WORDS, k=15)]:
+    print(choice)
+
+# In [ ]
+rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
+train_loop(rnn, TWO_CHAR_WORDS, train, n_iters=250)
+for l in ['f', 'p', 'a', 's', 't', 'z', 'y']:
+    for i in range(7):
+        print(f'Letter {l}, iter: {i}', evaluate(l, rnn))
+
+# <markdown>
+Ok, results looks gibberish but it does have few sequences where it may sound like a word. Gonna try just three characters.
+
+# In [ ]
+# Will make a dataset where it only consists of first three characters.
+THREE_CHAR_WORDS = list(set([word[:3] for word in LOWER_UP_TO_5_CHAR_WORDS if len(word) > 2]))
+print('length', len(THREE_CHAR_WORDS))
+for choice in [word for word in random.choices(THREE_CHAR_WORDS, k=15)]:
+    print(choice)
+
+# In [ ]
+rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
+train_loop(rnn, THREE_CHAR_WORDS, train, n_iters=5500)
+for l in ['f', 'p', 'a', 's', 't', 'z', 'y']:
+    for i in range(7):
+        print(f'Letter {l}, iter: {i}', evaluate(l, rnn))
+
+# <markdown>
+Not bad but it still produces gibberish.
+
+I did little research about words and I realised words are made up of syllables.
+Thus, it's possible that instead of just generating random character sequences,
+probably I should generate random sequences of **syllables**. Hopefully it won't
+be expensive to train (which I bet it will).
+
+Ok, looking at spacy, it has a plugin pip package that allows you to
+get a list of syllables, which is what I need --> https://spacy.io/universe/project/spacy_syllables#gatsby-noscript
