@@ -164,6 +164,20 @@ for l in ['f', 'p', 'a', 's', 't', 'z', 'y']:
     for i in range(7):
         print(f'Letter {l}, iter: {i}', evaluate(l, rnn))
 
+# In [ ]
+rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
+train_loop(rnn, TWO_CHAR_WORDS, train, n_iters=int(len(TWO_CHAR_WORDS)*1.5))
+for l in ['f', 'p', 'a', 's', 't', 'z', 'y']:
+    for i in range(7):
+        print(f'Letter {l}, iter: {i}', evaluate(l, rnn))
+
+# In [ ]
+rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
+train_loop(rnn, TWO_CHAR_WORDS, train, n_iters=int(len(TWO_CHAR_WORDS)*1000), print_every=1000, plot_every=5000)
+for l in ['f', 'p', 'a', 's', 't', 'z', 'y']:
+    for i in range(7):
+        print(f'Letter {l}, iter: {i}', evaluate(l, rnn))
+
 # <markdown>
 Ok, results looks gibberish but it does have few sequences where it may sound like a word. Gonna try just three characters.
 
@@ -177,6 +191,20 @@ for choice in [word for word in random.choices(THREE_CHAR_WORDS, k=15)]:
 # In [ ]
 rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
 train_loop(rnn, THREE_CHAR_WORDS, train, n_iters=5500)
+for l in ['f', 'p', 'a', 's', 't', 'z', 'y']:
+    for i in range(7):
+        print(f'Letter {l}, iter: {i}', evaluate(l, rnn))
+
+# In [ ]
+rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
+train_loop(rnn, THREE_CHAR_WORDS, train, n_iters=int(len(THREE_CHAR_WORDS)*1.3))
+for l in ['f', 'p', 'a', 's', 't', 'z', 'y']:
+    for i in range(7):
+        print(f'Letter {l}, iter: {i}', evaluate(l, rnn))
+
+# In [ ]
+rnn = firstRNN(th.LETTERS_TOTAL, 128, th.LETTERS_TOTAL)
+train_loop(rnn, THREE_CHAR_WORDS, train, n_iters=int(len(THREE_CHAR_WORDS)*10), print_every=1000, plot_every=5000)
 for l in ['f', 'p', 'a', 's', 't', 'z', 'y']:
     for i in range(7):
         print(f'Letter {l}, iter: {i}', evaluate(l, rnn))
