@@ -219,3 +219,10 @@ be expensive to train (which I bet it will).
 
 Ok, looking at spacy, it has a plugin pip package that allows you to
 get a list of syllables, which is what I need --> https://spacy.io/universe/project/spacy_syllables#gatsby-noscript
+
+# <markdown>
+## Testing different settings of the algorithm
+Settings to test:
+- Size of the hidden layer: 128, 256, 512
+- Learning rate: 0.0005, 0.001, 0.0015
+- Iterations: 100, 1000, 10000, 100000
