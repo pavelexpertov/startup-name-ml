@@ -2,6 +2,6 @@
 
 import itertools
 
-def get_argument_permutations(iterables*):
+def get_argument_permutations(*iterables):
     '''Return a generator for provided argument permutations.'''
-    if 
+    return itertools.product(*iterables)
