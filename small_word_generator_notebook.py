@@ -405,4 +405,8 @@ I will use the following criteria to get an idea of which parameters affect the 
 1.
 
 # In [ ]
-get_dataframe_from_pickled_resutls('LOWER_UP_TO_5_CHAR_WORDS')
+lutfcw_df = get_dataframe_from_pickled_resutls('LOWER_UP_TO_5_CHAR_WORDS')
+lutfcw_df.columns
+
+g = lutfcw_df.groupby(['hidden_layer_size', 'learning_rate'])
+g['learning_rate']
